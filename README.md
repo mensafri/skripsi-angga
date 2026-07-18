@@ -121,6 +121,38 @@ http://localhost:8080
 | `resources/views/dashboard.blade.php` | Halaman dashboard |
 | `resources/js/dashboard.js` | Konfigurasi grafik Chart.js |
 
+## Deploy produksi (Docker, self-contained)
+
+Stack produksi terpisah dari Sail: satu image **FrankenPHP** (PHP 8.4) + service
+**MySQL 8.4** sendiri, jaringan & volume sendiri, cuma publish ke **port host 8090**
+— aman dijalankan berdampingan dengan aplikasi lain di server (tidak menyentuh
+port 80/443 atau container lain).
+
+```bash
+# di server
+git clone https://github.com/mensafri/skripsi-angga.git
+cd skripsi-angga
+cp .env.deploy.example .env.deploy      # isi APP_KEY + password (lihat komentar di file)
+docker compose -f docker-compose.prod.yml up -d --build
+```
+
+Entrypoint otomatis menunggu DB, `migrate`, `db:seed` (590 sampel), `config/route/view:cache`,
+lalu menjalankan FrankenPHP. Akses:
+
+```
+http://<IP-server>:8090
+```
+
+File terkait: `Dockerfile`, `docker-compose.prod.yml`, `docker/frankenphp/`, `.env.deploy.example`.
+Secret ada di `.env.deploy` (tidak di-commit). Perintah berguna:
+
+```bash
+docker compose -f docker-compose.prod.yml logs -f app     # log
+docker compose -f docker-compose.prod.yml down            # stop
+docker compose -f docker-compose.prod.yml up -d --build   # update setelah git pull
+```
+
 ## Stack
 
-Laravel 13 · PHP 8.5 · MySQL 8.4 · Laravel Sail (Docker) · Tailwind CSS v4 · Vite · Chart.js
+**Dev:** Laravel 13 · PHP 8.5 · MySQL 8.4 · Laravel Sail · Tailwind CSS v4 · Vite · Chart.js
+**Produksi:** FrankenPHP (PHP 8.4) + MySQL 8.4 via Docker Compose, port 8090.
