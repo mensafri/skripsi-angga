@@ -1,0 +1,20 @@
+# Optional override: attach the app to an EXISTING reverse-proxy network so a
+# shared proxy (e.g. Caddy) can reach it by container name (skripsi-app:80) and
+# terminate TLS for a real domain. The DB stays on skripsi-net only (isolated).
+#
+# Usage on the server:
+#   docker compose -f docker-compose.prod.yml -f docker-compose.caddy.yml up -d
+#
+# Set the proxy network name to match your server (default below is this
+# deployment's Caddy network). The app must use an unambiguous DB host
+# (DB_HOST=skripsi-db) because the shared network may already have a "db" alias.
+services:
+  app:
+    networks:
+      - skripsi-net
+      - proxy-net
+
+networks:
+  proxy-net:
+    name: ${PROXY_NETWORK:-sapri-prod_sapri-net}
+    external: true
