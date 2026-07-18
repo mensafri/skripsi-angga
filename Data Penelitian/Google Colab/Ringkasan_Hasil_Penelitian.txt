@@ -1,0 +1,44 @@
+RINGKASAN HASIL PENELITIAN K-MEANS
+===================================
+
+Jumlah dataset akhir       : 590 data
+Jumlah fitur K-Means       : 3
+Fitur yang digunakan       :
+1. latency_ms
+2. packet_loss_percent
+3. total_traffic_mbps
+
+Standardisasi              : StandardScaler / Z-score
+Jumlah klaster             : 3
+Random state               : 42
+N init                     : 10
+Jumlah iterasi             : 10
+WCSS/SSE                    : 752.3804
+
+DISTRIBUSI KLASTER
+------------------
+Gangguan rendah            : 523 data (88,64%)
+Gangguan sedang            : 58 data (9,83%)
+Gangguan tinggi            : 9 data (1,53%)
+
+CENTROID
+--------
+Gangguan rendah:
+- Latency                  : 1,216 ms
+- Packet loss              : 0,0%
+- Throughput agregat       : 10,496 Mbps
+
+Gangguan sedang:
+- Latency                  : 2,410 ms
+- Packet loss              : 0,0%
+- Throughput agregat       : 38,477 Mbps
+
+Gangguan tinggi:
+- Latency                  : 2,615 ms
+- Packet loss              : 11,1%
+- Throughput agregat       : 12,343 Mbps
+
+Catatan:
+Throughput agregat merupakan hasil penjumlahan Bits sent dan
+Bits received pada interface bridge-10.5.0.1. Nilai tersebut
+menunjukkan trafik aktual dan bukan kapasitas maksimum jaringan.
