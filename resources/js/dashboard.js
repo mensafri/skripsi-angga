@@ -37,20 +37,20 @@ function boot(data) {
     const charts = {};
 
     // Pan + wheel/pinch zoom config reused by the time-series and scatter charts.
+    // `limits` clamps to the data's original range so zooming out never goes
+    // past the full view (avoids a confusing sub-1 zoom-out on trackpads).
+    const axisLimit = { min: 'original', max: 'original' };
     const zoom = (mode) => ({
-        pan: {
-            enabled: true,
-            mode,
-            modifierKey: null,
-            onPanComplete: ({ chart }) => toggleReset(chart, true),
-        },
+        pan: { enabled: true, mode },
         zoom: {
             wheel: { enabled: true },
             pinch: { enabled: true },
             drag: { enabled: false },
             mode,
-            onZoomComplete: ({ chart }) => toggleReset(chart, true),
         },
+        limits: mode === 'xy'
+            ? { x: axisLimit, y: axisLimit }
+            : { x: axisLimit },
     });
 
     /* Distribution — doughnut with a clickable HTML legend. */
@@ -215,7 +215,7 @@ function boot(data) {
         },
     });
 
-    wireResetButtons(charts);
+    wireZoomButtons(charts);
 }
 
 function create(id, config) {
@@ -227,19 +227,17 @@ function create(id, config) {
     });
 }
 
-/* Show/hide a chart's "Reset zoom" button. */
-function toggleReset(chart, show) {
-    const btn = document.querySelector(`[data-reset-zoom="${chart.canvas.id}"]`);
-    if (btn) btn.classList.toggle('hidden', !show);
-}
-
-function wireResetButtons(charts) {
-    document.querySelectorAll('[data-reset-zoom]').forEach((btn) => {
-        const chart = charts[btn.dataset.resetZoom];
+/* Wire the per-chart zoom toolbar (buttons: zoom out / reset / zoom in). */
+function wireZoomButtons(charts) {
+    document.querySelectorAll('[data-zoom-action]').forEach((btn) => {
+        const group = btn.closest('[data-zoom]');
+        const chart = group && charts[group.dataset.zoom];
         if (!chart) return;
         btn.addEventListener('click', () => {
-            chart.resetZoom();
-            btn.classList.add('hidden');
+            const action = btn.dataset.zoomAction;
+            if (action === 'in') chart.zoom(1.35);
+            else if (action === 'out') chart.zoom(0.75);
+            else chart.resetZoom();
         });
     });
 }

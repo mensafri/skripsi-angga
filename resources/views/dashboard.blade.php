@@ -185,12 +185,9 @@
         <div class="flex items-start justify-between gap-4 flex-wrap">
             <div>
                 <h2 class="text-lg font-semibold text-slate-900">Latency dari waktu ke waktu</h2>
-                <p class="text-sm text-slate-500 mt-1">Tiap titik diwarnai sesuai tingkat gangguan. Scroll untuk zoom, seret untuk menggeser.</p>
+                <p class="text-sm text-slate-500 mt-1">Zoom dengan tombol atau scroll, seret grafik untuk menggeser.</p>
             </div>
-            <button type="button" data-reset-zoom="latencyChart"
-                    class="hidden shrink-0 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg px-3 py-1.5 transition-colors">
-                Reset zoom
-            </button>
+            <x-zoom-controls chart="latencyChart" />
         </div>
         <div class="mt-4"><canvas id="latencyChart" height="88"></canvas></div>
     </section>
@@ -200,12 +197,9 @@
         <div class="flex items-start justify-between gap-4 flex-wrap">
             <div>
                 <h2 class="text-lg font-semibold text-slate-900">Throughput agregat dari waktu ke waktu</h2>
-                <p class="text-sm text-slate-500 mt-1">Total trafik (bits sent + received) pada interface bridge-10.5.0.1. Scroll untuk zoom, seret untuk menggeser.</p>
+                <p class="text-sm text-slate-500 mt-1">Total trafik (bits sent + received) pada interface bridge-10.5.0.1. Zoom dengan tombol atau scroll, seret untuk menggeser.</p>
             </div>
-            <button type="button" data-reset-zoom="trafficChart"
-                    class="hidden shrink-0 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg px-3 py-1.5 transition-colors">
-                Reset zoom
-            </button>
+            <x-zoom-controls chart="trafficChart" />
         </div>
         <div class="mt-4"><canvas id="trafficChart" height="88"></canvas></div>
     </section>
@@ -216,12 +210,9 @@
             <div class="flex items-start justify-between gap-4 flex-wrap">
                 <div>
                     <h2 class="text-lg font-semibold text-slate-900">Sebaran klaster</h2>
-                    <p class="text-sm text-slate-500 mt-1">Latency vs throughput. Scroll untuk zoom, klik legenda untuk sembunyikan.</p>
+                    <p class="text-sm text-slate-500 mt-1">Latency vs throughput. Zoom dengan tombol atau scroll, klik legenda untuk sembunyikan.</p>
                 </div>
-                <button type="button" data-reset-zoom="scatterChart"
-                        class="hidden shrink-0 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg px-3 py-1.5 transition-colors">
-                    Reset zoom
-                </button>
+                <x-zoom-controls chart="scatterChart" />
             </div>
             <div class="mt-4"><canvas id="scatterChart" height="112"></canvas></div>
         </div>
