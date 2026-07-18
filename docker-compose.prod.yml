@@ -17,6 +17,14 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    # Override the base image's healthcheck (which probes Caddy's disabled admin
+    # port 2019) with the real app health route.
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:80/up || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
     networks:
       - skripsi-net
 
