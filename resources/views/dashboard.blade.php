@@ -123,18 +123,25 @@
         <div class="card p-6 lg:col-span-2">
             <h2 class="text-lg font-semibold text-slate-900">Distribusi tingkat gangguan</h2>
             <p class="text-sm text-slate-500 mt-1">Proporsi sampel tiap klaster, dihitung dari data.</p>
-            <div class="mt-5 relative mx-auto" style="max-width:200px"><canvas id="distChart"></canvas></div>
-            <div class="mt-5 space-y-2">
+            <div class="mt-5 relative mx-auto" style="max-width:200px">
+                <canvas id="distChart"></canvas>
+                <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                    <span class="text-2xl font-semibold text-slate-900 num">{{ number_format($stats['total']) }}</span>
+                    <span class="text-xs text-slate-500">sampel</span>
+                </div>
+            </div>
+            <div class="mt-5 space-y-1" data-legend-group="distChart">
                 @foreach ($distribution as $d)
-                    <div class="flex items-center justify-between text-sm">
+                    <button type="button" data-legend="{{ $loop->index }}"
+                            class="w-full flex items-center justify-between text-sm rounded-lg px-2 py-1.5 -mx-2 hover:bg-slate-50 transition-colors">
                         <span class="inline-flex items-center gap-2 font-medium text-slate-700">
                             <span class="w-2.5 h-2.5 rounded-full" style="background: {{ $d['color'] }}"></span>
                             {{ $d['label'] }}
                         </span>
-                        <span class="tabular-nums text-slate-900 font-semibold">{{ number_format($d['count']) }}
+                        <span class="num text-slate-900 font-semibold">{{ number_format($d['count']) }}
                             <span class="text-slate-500 font-normal">· {{ $d['percent'] }}%</span>
                         </span>
-                    </div>
+                    </button>
                 @endforeach
             </div>
         </div>
@@ -175,23 +182,47 @@
 
     {{-- Latency over time --}}
     <section class="card p-6">
-        <h2 class="text-lg font-semibold text-slate-900">Latency dari waktu ke waktu</h2>
-        <p class="text-sm text-slate-500 mt-1">Tiap titik diwarnai sesuai tingkat gangguan hasil klasterisasi.</p>
+        <div class="flex items-start justify-between gap-4 flex-wrap">
+            <div>
+                <h2 class="text-lg font-semibold text-slate-900">Latency dari waktu ke waktu</h2>
+                <p class="text-sm text-slate-500 mt-1">Tiap titik diwarnai sesuai tingkat gangguan. Scroll untuk zoom, seret untuk menggeser.</p>
+            </div>
+            <button type="button" data-reset-zoom="latencyChart"
+                    class="hidden shrink-0 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg px-3 py-1.5 transition-colors">
+                Reset zoom
+            </button>
+        </div>
         <div class="mt-4"><canvas id="latencyChart" height="88"></canvas></div>
     </section>
 
     {{-- Throughput over time --}}
     <section class="card p-6">
-        <h2 class="text-lg font-semibold text-slate-900">Throughput agregat dari waktu ke waktu</h2>
-        <p class="text-sm text-slate-500 mt-1">Total trafik (bits sent + received) pada interface bridge-10.5.0.1.</p>
+        <div class="flex items-start justify-between gap-4 flex-wrap">
+            <div>
+                <h2 class="text-lg font-semibold text-slate-900">Throughput agregat dari waktu ke waktu</h2>
+                <p class="text-sm text-slate-500 mt-1">Total trafik (bits sent + received) pada interface bridge-10.5.0.1. Scroll untuk zoom, seret untuk menggeser.</p>
+            </div>
+            <button type="button" data-reset-zoom="trafficChart"
+                    class="hidden shrink-0 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg px-3 py-1.5 transition-colors">
+                Reset zoom
+            </button>
+        </div>
         <div class="mt-4"><canvas id="trafficChart" height="88"></canvas></div>
     </section>
 
     {{-- Scatter + per-day --}}
     <section class="grid lg:grid-cols-2 gap-6">
         <div class="card p-6">
-            <h2 class="text-lg font-semibold text-slate-900">Sebaran klaster</h2>
-            <p class="text-sm text-slate-500 mt-1">Latency vs throughput, dikelompokkan K-Means.</p>
+            <div class="flex items-start justify-between gap-4 flex-wrap">
+                <div>
+                    <h2 class="text-lg font-semibold text-slate-900">Sebaran klaster</h2>
+                    <p class="text-sm text-slate-500 mt-1">Latency vs throughput. Scroll untuk zoom, klik legenda untuk sembunyikan.</p>
+                </div>
+                <button type="button" data-reset-zoom="scatterChart"
+                        class="hidden shrink-0 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg px-3 py-1.5 transition-colors">
+                    Reset zoom
+                </button>
+            </div>
             <div class="mt-4"><canvas id="scatterChart" height="112"></canvas></div>
         </div>
         <div class="card p-6">
@@ -239,6 +270,8 @@
     <section class="card p-6">
         <h2 class="text-lg font-semibold text-slate-900">Data lengkap</h2>
         <p class="text-sm text-slate-500 mt-1">{{ number_format($table->total()) }} sampel hasil klasterisasi.</p>
+        {{-- #data-table is swapped in place on pagination (no full reload / no scroll jump). --}}
+        <div id="data-table" aria-live="polite" class="transition-opacity duration-200">
         <div class="mt-4 overflow-x-auto">
             <table class="w-full text-sm">
                 <thead>
@@ -273,6 +306,7 @@
             </table>
         </div>
         <div class="mt-5">{{ $table->links() }}</div>
+        </div>{{-- /#data-table --}}
     </section>
 
     <footer class="text-sm text-slate-500 border-t border-slate-200 pt-6 pb-4">
