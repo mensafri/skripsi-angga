@@ -1,0 +1,21 @@
+# FrankenPHP serves the Laravel app over plain HTTP on :80 inside the container.
+# TLS is intentionally disabled: the container is published on a host port and
+# is not the edge — no ACME, no port 443 binding.
+{
+	frankenphp
+	auto_https off
+	admin off
+	persist_config off
+}
+
+:80 {
+	root * /app/public
+	encode zstd gzip
+
+	# Serve Laravel's front controller and hand .php to FrankenPHP.
+	php_server
+
+	# Basic hardening: never serve dotfiles.
+	@dotfiles path /.*
+	respond @dotfiles 404
+}

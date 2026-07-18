@@ -1,0 +1,48 @@
+# Production stack — fully isolated: own MySQL, own volume, own network.
+# Published only on host port 8090 (does not touch ports 80/443 or any other app).
+name: skripsi
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: skripsi-angga:latest
+    container_name: skripsi-app
+    restart: unless-stopped
+    env_file:
+      - .env.deploy
+    ports:
+      - "8090:80"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - skripsi-net
+
+  db:
+    image: mysql:8.4
+    container_name: skripsi-db
+    restart: unless-stopped
+    # MySQL reads MYSQL_* directly from .env.deploy (same file the app uses),
+    # so credentials can never drift between the two services.
+    env_file:
+      - .env.deploy
+    volumes:
+      - skripsi-mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - skripsi-net
+
+volumes:
+  skripsi-mysql:
+    driver: local
+
+networks:
+  skripsi-net:
+    name: skripsi-net
+    driver: bridge
