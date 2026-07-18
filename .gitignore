@@ -26,6 +26,3 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
-
-# Research data archive (raw zip kept out of repo; extracted files are committed)
-*.zip
